@@ -1,3 +1,4 @@
+// DIRECTION DATABASE
 module.exports = {
     database: {
         host: 'localhost',
@@ -5,4 +6,4 @@ module.exports = {
         password: '',
         database: 'Delilah_Resto',
     }
-}
+};

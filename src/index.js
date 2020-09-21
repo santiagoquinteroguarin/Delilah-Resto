@@ -9,11 +9,11 @@ app.set('port', process.env.PORT || 3000);
 
 // Middlewares
 app.use(morgan('dev'));
-app.use(express.urlencoded({extended: false})); //Entender los datos que llegan desde los inputs de formularios, false quiere decir que no imagenes ni archivos, solo strings o numeros 
-app.use(express.json()); //Body-parser por default desde express - manejar en formato json
+app.use(express.urlencoded({extended: false})); 
+app.use(express.json());
 
 // Routes
-app.use(require('./routes/index'));
+app.use(require('./routes'));
 app.use(require('./routes/authentication'));
 app.use('/links', require('./routes/links'));
 
