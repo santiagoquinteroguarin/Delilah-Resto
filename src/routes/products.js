@@ -2,7 +2,6 @@
 const { Router } = require('express');
 const router = Router();
 const pool = require('../database');
-const { isLoggedIn, isNotLoggedIn } = require('../lib/auth');
 
 // products - add product
 router.post('/add', async (req, res) => {
@@ -22,7 +21,6 @@ router.post('/add', async (req, res) => {
 router.get('/', async (req, res) => {
     const products = await pool.query('SELECT * FROM products');
     res.json(products);
-    res.send('list products');
 });
 
 // delete product
@@ -40,7 +38,7 @@ router.put('/edit/:id', async (req, res) => {
         description,
         price,
         picture,
-        is_avaliable
+        is_avaliable,
     };
     await pool.query('UPDATE products SET ? WHERE id = ?', [newProduct, id]);
     res.send('actualizado');
