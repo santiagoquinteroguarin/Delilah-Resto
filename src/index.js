@@ -15,7 +15,8 @@ app.use(express.json());
 // Routes
 app.use(require('./routes'));
 app.use(require('./routes/authentication'));
-app.use('/links', require('./routes/links'));
+app.use('/products', require('./routes/products'));
+app.use('/users', require('./routes/users'));
 
 // Starting the server
 app.listen(app.get('port'), () => {
