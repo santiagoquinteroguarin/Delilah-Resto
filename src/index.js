@@ -25,11 +25,16 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Global variables
+app.use((req, res, next) => {
+    app.locals.user = req.user;
+    next();
+})
+
 // Routes
-app.use(require('./routes'));
+app.use(require('./routes/index'));
 app.use(require('./routes/authentication'));
 app.use('/products', require('./routes/products'));
-app.use('/users', require('./routes/users'));
 
 // Starting the server
 app.listen(app.get('port'), () => {

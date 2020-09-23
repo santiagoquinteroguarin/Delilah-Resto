@@ -34,8 +34,8 @@ passport.use('local.signup', new LocalStrategy({
 }, async (req, username, password, done) => {
     const { fullname, email, phone_number, address, is_admin } = req.body;
     const newUser = {
-        fullname,
         username,
+        fullname,
         email,
         phone_number,
         address,
