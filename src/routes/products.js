@@ -28,10 +28,17 @@ router.post('/add', isAdmin, async (req, res) => {
     }
 });
 
-// products
+// all products
 router.get('/', isLoggedIn, async (req, res) => {
     const products = await pool.query('SELECT * FROM products');
     res.json(products);
+});
+
+// one product
+router.get('/:id', isLoggedIn, async (req, res) => {
+    const { id } = req.params;
+    const product = await pool.query('SELECT * FROM products WHERE id = ?', [id]);
+    res.json(product);
 });
 
 // delete product
