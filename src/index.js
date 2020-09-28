@@ -32,9 +32,14 @@ app.use((req, res, next) => {
 })
 
 // Routes
+// ------- home
 app.use(require('./routes/index'));
+// ------- Authentication
 app.use(require('./routes/authentication'));
+// ------- Products
 app.use('/products', require('./routes/products'));
+// ------- User
+app.use('/users', require('./routes/users'));
 
 // Starting the server
 app.listen(app.get('port'), () => {
