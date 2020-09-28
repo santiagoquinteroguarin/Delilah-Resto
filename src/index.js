@@ -38,8 +38,10 @@ app.use(require('./routes/index'));
 app.use(require('./routes/authentication'));
 // ------- Products
 app.use('/products', require('./routes/products'));
-// ------- User
+// ------- Users
 app.use('/users', require('./routes/users'));
+// ------- Orders
+app.use('/orders', require('./routes/orders'));
 
 // Starting the server
 app.listen(app.get('port'), () => {
