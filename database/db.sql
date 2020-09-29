@@ -51,17 +51,6 @@ CREATE TABLE products(
     is_avaliable TINYINT(1)
 );
 
--- Table Favorites
-USE Delilah_Resto;
-CREATE TABLE favorites(
-    id INT(11) PRIMARY KEY  NOT NULL AUTO_INCREMENT,
-    id_user INT(11),
-    id_product INT(11),
-    -- FOREIGN KEYS
-    CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES users(id),
-    CONSTRAINT fk_product FOREIGN KEY (id_product) REFERENCES products(id)
-);
-
 -- Table Payment Method
 USE Delilah_Resto;
 CREATE TABLE payment_method (
@@ -79,17 +68,13 @@ INSERT INTO payment_method (description) VALUES
 USE Delilah_Resto;
 CREATE TABLE orders(
     id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    id_product INT(11),
-    id_user INT(11),
-    id_state INT(11),
+    id_user INT(11) NOT NULL,
+    id_state INT(11) NOT NULL DEFAULT 1,
     id_payment_method INT(11) NOT NULL,
     order_date timestamp NOT NULL DEFAULT current_timestamp
 );
 
 -- FOREIGN KEYS TABLE ORDERS
-USE Delilah_Resto;
-ALTER TABLE orders
-    ADD CONSTRAINT fk_pd FOREIGN KEY (id_product) REFERENCES products(id);
 
 USE Delilah_Resto;
 ALTER TABLE orders
@@ -117,9 +102,17 @@ USE Delilah_Resto;
 ALTER TABLE order_details
     ADD CONSTRAINT fk_order FOREIGN KEY (id_order) REFERENCES orders(id);
 
+USE Delilah_Resto;
+ALTER TABLE order_details
+    ADD CONSTRAINT fk_pd FOREIGN KEY (id_product) REFERENCES products(id);
+
 -- QUERYS
 USE Delilah_Resto;
 SELECT * FROM user;
 
 USE Delilah_Resto;
 SELECT * FROM products;
+
+USE Delilah_Resto;
+INSERT INTO orders (id_user, id_payment_method)
+VALUES(2,1)

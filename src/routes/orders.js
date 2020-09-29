@@ -1,27 +1,52 @@
 // Authentications
 const { Router } = require('express');
 const router = Router();
-const passport = require('passport');
 const pool = require('../database');
 const { isLoggedIn, isNotLoggedIn, isAdmin } = require('../lib/auth');
 
 // add order
-router.post('/', isLoggedIn, async (req, res) => {
-    const id_user = req.user.user.id;
-    const id_product = req.products.products.id;
-    const { id_payment_method } = req.body;
-    const newOrder = {
-        id_product,
-        id_user,
-        id_state,
-        id_payment_method
-    }
-    const order = await pool.query('INSERT INTO orders SET ?)',[newOrder]);
+router.post('/add', isLoggedIn, async (req, res) => {
+    // generate order
+    try {
+        // get id user
+        const id_user = req.user.id;
+        const { id_payment_method } = req.body;
+        const newOrder = {
+            id_user,
+            id_payment_method
+        }
+        
+        // generate order
+        await pool.query('INSERT INTO orders SET ?', [newOrder]);
 
-    req.body.items.forEach(item => {
-        pool.query('INSERT INTO order_details SET ?',[item.order, item.id_product, item.amount]);
-    })
-})
+        // add order details
+        const searchIdOrder = await pool.query('SELECT * FROM orders WHERE id_user = ?',[id_user]);
+        const id_order = searchIdOrder[0].id;
+        console.log(id_order)
+
+        req.body.products.forEach(async item => {
+            const id_product = item.id_product;
+            const amount = item.amount;
+            const newOrderDetails = {
+                id_order,
+                id_product,
+                amount,
+            }
+            console.log(newOrderDetails)
+            await pool.query('INSERT INTO order_details SET ?', [newOrderDetails]);
+        })
+
+        res.json({
+            state:"success"
+        })
+    } catch (error) {
+        res.json({
+            state:"failed",
+            check:"verify the data and try again",
+        });
+        res.statusCode = 300;
+    }
+});
 
 // all orders
 router.get('/all', isAdmin, async (req, res) => {
@@ -31,13 +56,7 @@ router.get('/all', isAdmin, async (req, res) => {
     JOIN productos pr ON pp.id_producto = pr.id 
     JOIN forma_pago ON pe.id_pago = forma_pago.id
     JOIN imagenes ON pr.id_imagen = imagenes.id `, { type: sequelize.QueryTypes.SELECT })
-    
-    if(allOrders == ""){
-        return res.status(400).json('No hay nada que mostrar.');
-    }else { 
-        res.status(200).json(allOrders)
-    }
-})
+});
 
 // one order
 router.get('/:id', isLoggedIn, async (req, res) => {
