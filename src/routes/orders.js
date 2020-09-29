@@ -22,7 +22,6 @@ router.post('/add', isLoggedIn, async (req, res) => {
         // add order details
         const searchIdOrder = await pool.query('SELECT * FROM orders WHERE id_user = ?',[id_user]);
         const id_order = searchIdOrder[0].id;
-        console.log(id_order)
 
         req.body.products.forEach(async item => {
             const id_product = item.id_product;
@@ -32,7 +31,6 @@ router.post('/add', isLoggedIn, async (req, res) => {
                 id_product,
                 amount,
             }
-            console.log(newOrderDetails)
             await pool.query('INSERT INTO order_details SET ?', [newOrderDetails]);
         })
 
@@ -49,38 +47,53 @@ router.post('/add', isLoggedIn, async (req, res) => {
 });
 
 // all orders
-router.get('/all', isAdmin, async (req, res) => {
-    const allOrders = await pool.query(`SELECT pe.id, pe.estado, pe.fecha_hora, pr.producto, pp.cantidad, pr.precio, cl.usuario, cl.telefono, cl.direccion, cl.email, cl.nombre, cl.apellido, forma_pago.icon_pago
-    FROM pedidos pe JOIN producto_pedido pp ON pe.id = pp.id_pedido
-    JOIN clientes cl ON pe.id_cliente = cl.id 
-    JOIN productos pr ON pp.id_producto = pr.id 
-    JOIN forma_pago ON pe.id_pago = forma_pago.id
-    JOIN imagenes ON pr.id_imagen = imagenes.id `, { type: sequelize.QueryTypes.SELECT })
+router.get('/', isAdmin, async (req, res) => {
+    const allOrders = await pool.query(`
+    SELECT orders.id , status.state, orders.order_date, order_details.amount, products.name AS product, products.description, payment_method.description AS payment_method,products.price, users.username, users.fullname, users.address, users.phone_number, users.email 
+    FROM orders 
+    INNER JOIN order_details ON orders.id = order_details.id 
+    INNER JOIN products ON order_details.id_product = products.id 
+    INNER JOIN users ON orders.id_user = users.id 
+    INNER JOIN payment_method ON orders.id_payment_method = payment_method.id 
+    INNER JOIN status ON orders.id_state = status.id`);
+    res.json(allOrders)
 });
 
 // one order
 router.get('/:id', isLoggedIn, async (req, res) => {
-    const id = req.params.id;
-    const idUser = req.user.user.id;
-    await pool.query('SELECT * FROM orders WHERE id = ? AND id_user = ?',[id, idUser]);
+    const { id } = req.params;
+    const id_user = req.user.id;
+    const data = await pool.query(`
+        SELECT orders.id , status.state, orders.order_date, order_details.amount, products.name AS product, products.description, payment_method.description AS payment_method,products.price, users.username, users.fullname, users.address, users.phone_number, users.email 
+        FROM orders 
+            INNER JOIN order_details ON orders.id = order_details.id 
+            INNER JOIN products ON order_details.id_product = products.id 
+            INNER JOIN users ON orders.id_user = users.id 
+            INNER JOIN payment_method ON orders.id_payment_method = payment_method.id 
+            INNER JOIN status ON orders.id_state = status.id
+        WHERE orders.id = ? AND users.id = ?`,[id, id_user]);
+    res.json(data)
 });
 
-// edit order
+// update order
 router.put('/edit/:id', isAdmin, async (req, res) => {
-    const id = req.params.id;
-    const status = req.body;
-    await pool.query('UPDATE orders SET state = ? WHERE id = ?',[status, id]);
+    const { id } = req.params;
+    const { state } = req.body;
+    await pool.query('UPDATE orders SET id_state = ? WHERE id = ?', [state, id]);
+    res.json({
+        state:"success"
+    })
 });
 
 // delete order
 router.delete('/delete/:id', isAdmin, async (req, res) => {
-    const id = req.params.id;
-    const db = await pool.query(`SELECT * FROM pedidos WHERE id = ${id}`, { type: sequelize.QueryTypes.SELECT })
-    if(db[0].estado == "Nuevo"){
-        pool.query('DELETE FROM orders WHERE id = ?',[id]);
-        pool.query('DELETE FROM order_details WHERE id_order = ?',[id]);
+    const { id } = req.params;
+    const data = await pool.query(`SELECT * FROM orders WHERE id = ?`, [id]);
+    if(data[0].id_state === 1){
+        await pool.query('DELETE FROM orders WHERE id = ?', [id]);
+        await pool.query('DELETE FROM order_details WHERE id = ?', [id]);
     }else {
-        return res.status(400).json('No se puede eliminar un pedido ya en proceso, cambiar el estado a Cancelado');
+        return res.status(400).json('You cannot delete an order already in process, change the status to canceled');
     }
 });
 
