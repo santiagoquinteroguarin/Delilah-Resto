@@ -8,14 +8,18 @@ const { isLoggedIn, isNotLoggedIn, isAdmin } = require('../lib/auth');
 // all users
 router.get('/', isAdmin, async (req, res) => {
     const users = await pool.query('SELECT * FROM users');
-    res.json(users);
+    res.status(200).res.json(users);
 });
 
 // one user
 router.get('/:id', isLoggedIn, async (req, res) => {
-    const { id } = req.params;
-    const user = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
-    res.json(user);
+    try {
+        const { id } = req.params;
+        const user = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
+        res.status(200).res.json(user);
+    } catch (error) {
+        res.status(400).res.json({Error:"the user you are looking for does not exist"});
+    }
 });
 
 // edit user
@@ -32,16 +36,10 @@ router.put('/edit/:id', isLoggedIn, async (req, res) => {
             password,
             is_admin,
         };
-        await pool.query('UPDATE users SET ? WHERE id = ?', [editUser, id]);
-        res.json({
-            state: "edited user - success",
-            editUser
-        });
+        const data = await pool.query('UPDATE users SET ? WHERE id = ?', [editUser, id]);
+        res.status(200).res.json(data);
     } catch (error) {
-        res.json({
-            state:"failed",
-            check:"verify the data and try again",
-        });
+        res.status(400).res.json({Error:"verify the data and try again"});
     }
 });
 
@@ -49,15 +47,10 @@ router.put('/edit/:id', isLoggedIn, async (req, res) => {
 router.delete('/delete/:id', isLoggedIn ,async (req, res) => {
     try {
         const { id } = req.params;
-        const user = await pool.query('DELETE FROM users WHERE id = ?', [id]);
-        res.json({
-            state: "Deleted user - success"
-        });
+        await pool.query('DELETE FROM users WHERE id = ?', [id]);
+        res.status(200).res.json({message:"User Deleted"});
     } catch (error) {
-        res.json({
-            state:"failed",
-            message:"The user does not exists"
-        });
+        res.status(400).res.json({Error:"the user you are looking for does not exist"});
     }
 });
 

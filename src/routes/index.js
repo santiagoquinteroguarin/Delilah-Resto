@@ -1,12 +1,9 @@
 // Todas las rutas principales
 const express = require('express');
 const router = express.Router();
-const { isLoggedIn, isNotLoggedIn, isAdmin } = require('../lib/auth');
 
 router.get('/', (req, res) => {
-    res.json({
-        home:"home",
-    });
+    res.status(200).res.json({home:"This is home"});
 });
 
 module.exports = router;

@@ -15,7 +15,7 @@ router.post('/add', isLoggedIn, async (req, res) => {
             id_user,
             id_payment_method
         }
-        
+
         // generate order
         await pool.query('INSERT INTO orders SET ?', [newOrder]);
 
@@ -34,21 +34,15 @@ router.post('/add', isLoggedIn, async (req, res) => {
             await pool.query('INSERT INTO order_details SET ?', [newOrderDetails]);
         })
 
-        res.json({
-            state:"success"
-        })
+        res.status(200).json('Order added');
     } catch (error) {
-        res.json({
-            state:"failed",
-            check:"verify the data and try again",
-        });
-        res.statusCode = 300;
+        res.status(400).json('verify the data and try again');
     }
 });
 
 // all orders
 router.get('/', isAdmin, async (req, res) => {
-    const allOrders = await pool.query(`
+    const data = await pool.query(`
     SELECT orders.id , status.state, orders.order_date, order_details.amount, products.name AS product, products.description, payment_method.description AS payment_method,products.price, users.username, users.fullname, users.address, users.phone_number, users.email 
     FROM orders 
     INNER JOIN order_details ON orders.id = order_details.id 
@@ -56,7 +50,8 @@ router.get('/', isAdmin, async (req, res) => {
     INNER JOIN users ON orders.id_user = users.id 
     INNER JOIN payment_method ON orders.id_payment_method = payment_method.id 
     INNER JOIN status ON orders.id_state = status.id`);
-    res.json(allOrders)
+
+    (data == "") ? res.status(400).json('There are no orders to show') : res.status(200).json(data);
 });
 
 // one order
@@ -72,17 +67,25 @@ router.get('/:id', isLoggedIn, async (req, res) => {
             INNER JOIN payment_method ON orders.id_payment_method = payment_method.id 
             INNER JOIN status ON orders.id_state = status.id
         WHERE orders.id = ? AND users.id = ?`,[id, id_user]);
-    res.json(data)
+
+    (data == "") ? res.status(400).json('the order you are looking for does not exist in the system') : res.status(200).json(data);
 });
 
 // update order
 router.put('/edit/:id', isAdmin, async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
-    await pool.query('UPDATE orders SET id_state = ? WHERE id = ?', [state, id]);
-    res.json({
-        state:"success"
-    })
+    try {
+        const { id } = req.params;
+        const { state } = req.body;
+        await pool.query('UPDATE orders SET id_state = ? WHERE id = ?', [state, id]);
+        res.status(200).res.json({
+            state:"Order Updated"
+        });
+    } catch (error) {
+        res.status(400).res.json({
+            Failed:"The order you are looking for does not exist"
+        });
+    }
+    
 });
 
 // delete order
@@ -92,6 +95,9 @@ router.delete('/delete/:id', isAdmin, async (req, res) => {
     if(data[0].id_state === 1){
         await pool.query('DELETE FROM orders WHERE id = ?', [id]);
         await pool.query('DELETE FROM order_details WHERE id = ?', [id]);
+        res.status(200).res.json({
+            order:"Order Deleted"
+        });
     }else {
         return res.status(400).json('You cannot delete an order already in process, change the status to canceled');
     }
