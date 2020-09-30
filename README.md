@@ -1,8 +1,10 @@
-# Delilah Resto - Acamica!
+# Delilah Resto - Acamica!🛒
 
-Hello! 😉 this is the last project of the certification of **Full-Stack Web Development of Acamica**, it is about creating a **ResfulApi** for a restaurant app.
+![this is a picture of a shopping cart](./images/shopping-car.jpg)
 
-## Development tools
+Hello! 😉 this is the last project of the certification of **Full-Stack Web Development of Acamica**💻, it is about creating a **ResfulApi** for a restaurant app.
+
+## Development tools.🔧🛠⚙
 
   - **Node.js**
   - **Express.js**
@@ -11,8 +13,7 @@ Hello! 😉 this is the last project of the certification of **Full-Stack Web De
   - **JavaScript**
   - **MySQL**
 
-
-## Installation
+## Installation.📃‼
 
 - **download Xampp**
 - **start xampp and turn on apache and mysql**
@@ -23,7 +24,6 @@ Hello! 😉 this is the last project of the certification of **Full-Stack Web De
 - **run database script**
 - **Open Terminal**
 
-
 Install the dependencies and devDependencies and start the server.
 
 ```sh
@@ -31,23 +31,30 @@ $ npm install
 $ npm install -d
 $ npm run dev
 ```
+## DATABASE.🔑💾
+
+Once the dependency mysql is installed, you'll be able to create the database and tables using the file **db.sql**.
+
+## Postman.🦸‍♀️🦸‍♂️
+
+In the file **delilah.json** you will find the tests to the **endopoints** with the necessary requests.
 
 ## Endpoints.
 
 To interact with the API you need the following endpoints where we will be able to do **CRUD** type operations.
 
-### EndPoints - Users.
+### EndPoints - Users.😃🤩
 
-| protocolo | categoria | Endpoints | Description |
+| protocol | category | Endpoints | Description |
 | ------ | ------ | ------ | ------ |
 | GET | Users | http://localhost:3000/users/ | All Users |
 | GET | Users | http://localhost:3000/users/:id | User |
 | PUT | Users | http://localhost:3000/users/edit/:id| Edit User |
 | DELETE | Users | http://localhost:3000/users/delete/:id | Delete User |
 
-### EndPoints - Products.
+### EndPoints - Products.🍔🌭🍟🍕🌮🥪
 
-| protocolo | categoria | Endpoints | Description |
+| protocol | category | Endpoints | Description |
 | ------ | ------ | ------ | ------ |
 | GET | Products | http://localhost:3000/products/ | All Products |
 | GET | Products | http://localhost:3000/products/:id | Product |
@@ -55,9 +62,9 @@ To interact with the API you need the following endpoints where we will be able 
 | POST | Products | http://localhost:3000/products/add | Add Product |
 | DELETE | Products | http://localhost:3000/products/delete/:id | Delete Product |
 
-### EndPoint - Orders.
+### EndPoint - Orders.🚀🚦
 
-| protocolo | categoria | Endpoints | Description |
+| protocol | category | Endpoints | Description |
 | ------ | ------ | ------ | ------ |
 | GET | Orders | http://localhost:3000/orders/ | All Orders |
 | GET | Orders | http://localhost:3000/orders/:id | Order |
@@ -65,9 +72,9 @@ To interact with the API you need the following endpoints where we will be able 
 | POST | Orders | http://localhost:3000/orders/add | Add Order |
 | DELETE | Orders | http://localhost:3000/orders/delete/1 | Delete Order |
 
-### EndPoints - Others.
+### EndPoints - Others.🔒🔓📍🔑
 
-| protocolo | categoria | Endpoints | Description |
+| protocol | category | Endpoints | Description |
 | ------ | ------ | ------ | ------ |
 | GET | Logout | http://localhost:3000/logout/ | Log Out |
 | GET | Profile | http://localhost:3000/profile | User Profile |
@@ -75,13 +82,13 @@ To interact with the API you need the following endpoints where we will be able 
 | POST | Sign Up | http://localhost:3000/signup | User Sign Up |
 | POST | Sign In | http://localhost:3000/signin | User Sign In |
 
-## Response
+## Response.📄
 
-All answers will be in json format
+All answers will be in json format.
 
-Created by **Santiago Quintero Guarin**
-
-License
+License.
 ----
 
 MIT
+
+Created by **Santiago Quintero Guarin** 😎✨
