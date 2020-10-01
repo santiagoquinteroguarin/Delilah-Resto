@@ -7,8 +7,19 @@ const { isLoggedIn, isNotLoggedIn, isAdmin } = require('../lib/auth');
 
 // all users
 router.get('/', isAdmin, async (req, res) => {
-    const users = await pool.query('SELECT * FROM users');
-    res.status(200).res.json(users);
+    try {
+        const users = await pool.query('SELECT * FROM users');
+        res.status(200);
+        res.json(users);
+    } catch (error) {
+        if(res.status(403)) {
+            res.status(403);
+            res.json({Message:"user does not have access to this resource to one that is authenticated"});
+        } else {
+            res.status(500);
+            res.json({Error:"Internal Server Error"});
+        }
+    }
 });
 
 // one user
@@ -16,9 +27,17 @@ router.get('/:id', isLoggedIn, async (req, res) => {
     try {
         const { id } = req.params;
         const user = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
-        res.status(200).res.json(user);
+        if(user == "") {
+            res.status(404);
+            res.json({Error:"the user you are looking for does not exist"});
+        } else {
+            res.status(200);
+            res.json(user);
+        }
+        
     } catch (error) {
-        res.status(400).res.json({Error:"the user you are looking for does not exist"});
+        res.status(500);
+        res.json({Error:"Internal Server Error"});
     }
 });
 
@@ -37,9 +56,11 @@ router.put('/edit/:id', isLoggedIn, async (req, res) => {
             is_admin,
         };
         const data = await pool.query('UPDATE users SET ? WHERE id = ?', [editUser, id]);
-        res.status(200).res.json(data);
+        res.status(200);
+        res.json(data);
     } catch (error) {
-        res.status(400).res.json({Error:"verify the data and try again"});
+        res.status(400);
+        res.json({Error:"verify the data and try again"});
     }
 });
 
@@ -47,10 +68,19 @@ router.put('/edit/:id', isLoggedIn, async (req, res) => {
 router.delete('/delete/:id', isLoggedIn ,async (req, res) => {
     try {
         const { id } = req.params;
-        await pool.query('DELETE FROM users WHERE id = ?', [id]);
-        res.status(200).res.json({message:"User Deleted"});
+        const data = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
+        if(data == "") {
+            res.status(400);
+            res.json({Message:"the user you are looking for does not exist"});
+        } else {
+            await pool.query('DELETE FROM users WHERE id = ?', [id]);
+            res.status(200);
+            res.json({message:"User Deleted"});
+        }
+        
     } catch (error) {
-        res.status(400).res.json({Error:"the user you are looking for does not exist"});
+        res.status(500);
+        res.json({Error:"Internal Server Error"});
     }
 });
 

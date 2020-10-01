@@ -34,9 +34,11 @@ router.post('/add', isLoggedIn, async (req, res) => {
             await pool.query('INSERT INTO order_details SET ?', [newOrderDetails]);
         })
 
-        res.status(200).json('Order added');
+        res.status(200);
+        json('Order added');
     } catch (error) {
-        res.status(400).json('verify the data and try again');
+        res.status(400);
+        json('verify the data and try again');
     }
 });
 
@@ -51,7 +53,13 @@ router.get('/', isAdmin, async (req, res) => {
     INNER JOIN payment_method ON orders.id_payment_method = payment_method.id 
     INNER JOIN status ON orders.id_state = status.id`);
 
-    (data == "") ? res.status(400).json('There are no orders to show') : res.status(200).json(data);
+    if(data == ""){
+        res.status(400);
+        json('There are no orders to show');
+    } else {
+        res.status(200);
+        json(data);
+    }
 });
 
 // one order
@@ -68,7 +76,13 @@ router.get('/:id', isLoggedIn, async (req, res) => {
             INNER JOIN status ON orders.id_state = status.id
         WHERE orders.id = ? AND users.id = ?`,[id, id_user]);
 
-    (data == "") ? res.status(400).json('the order you are looking for does not exist in the system') : res.status(200).json(data);
+    if(data == "") {
+        res.status(400);
+        json('the order you are looking for does not exist in the system')
+    } else {
+        res.status(200);
+        json(data);
+    } 
 });
 
 // update order
@@ -77,11 +91,13 @@ router.put('/edit/:id', isAdmin, async (req, res) => {
         const { id } = req.params;
         const { state } = req.body;
         await pool.query('UPDATE orders SET id_state = ? WHERE id = ?', [state, id]);
-        res.status(200).res.json({
+        res.status(200);
+        res.json({
             state:"Order Updated"
         });
     } catch (error) {
-        res.status(400).res.json({
+        res.status(400);
+        res.json({
             Failed:"The order you are looking for does not exist"
         });
     }
@@ -95,11 +111,13 @@ router.delete('/delete/:id', isAdmin, async (req, res) => {
     if(data[0].id_state === 1){
         await pool.query('DELETE FROM orders WHERE id = ?', [id]);
         await pool.query('DELETE FROM order_details WHERE id = ?', [id]);
-        res.status(200).res.json({
+        res.status(200);
+        res.json({
             order:"Order Deleted"
         });
     }else {
-        return res.status(400).json('You cannot delete an order already in process, change the status to canceled');
+        res.status(400);
+        json('You cannot delete an order already in process, change the status to canceled');
     }
 });
 

@@ -37,7 +37,7 @@ Once the dependency mysql is installed, you'll be able to create the database an
 
 ## Postman.🦸‍♀️🦸‍♂️
 
-In the file **delilah.json** you will find the tests to the **endopoints** with the necessary requests.
+In the file **delilah.json** you will find the tests to the **endpoints** with the necessary requests.
 
 ## Endpoints.
 
