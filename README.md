@@ -70,7 +70,7 @@ To interact with the API you need the following endpoints where we will be able 
 | GET | Orders | http://localhost:3000/orders/:id | Order |
 | PUT | Orders | http://localhost:3000/orders/edit/:id | Edit Order |
 | POST | Orders | http://localhost:3000/orders/add | Add Order |
-| DELETE | Orders | http://localhost:3000/orders/delete/1 | Delete Order |
+| DELETE | Orders | http://localhost:3000/orders/delete/:id | Delete Order |
 
 ### EndPoints - Others.🔒🔓📍🔑
 

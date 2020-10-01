@@ -19,10 +19,11 @@ router.post('/add', isLoggedIn, async (req, res) => {
         // generate order
         await pool.query('INSERT INTO orders SET ?', [newOrder]);
 
-        // add order details
+        // search order
         const searchIdOrder = await pool.query('SELECT * FROM orders WHERE id_user = ?',[id_user]);
         const id_order = searchIdOrder[0].id;
 
+        // add order details
         req.body.products.forEach(async item => {
             const id_product = item.id_product;
             const amount = item.amount;
@@ -32,13 +33,13 @@ router.post('/add', isLoggedIn, async (req, res) => {
                 amount,
             }
             await pool.query('INSERT INTO order_details SET ?', [newOrderDetails]);
-        })
+        });
 
         res.status(200);
-        json('Order added');
+        res.json({Message:'Order added'});
     } catch (error) {
         res.status(400);
-        json('verify the data and try again');
+        res.json({Message:'verify the data and try again'});
     }
 });
 
@@ -54,11 +55,11 @@ router.get('/', isAdmin, async (req, res) => {
     INNER JOIN status ON orders.id_state = status.id`);
 
     if(data == ""){
-        res.status(400);
-        json('There are no orders to show');
+        res.status(204);
+        res.json({Message:'There are no orders to show'});
     } else {
         res.status(200);
-        json(data);
+        res.json(data);
     }
 });
 
@@ -77,11 +78,11 @@ router.get('/:id', isLoggedIn, async (req, res) => {
         WHERE orders.id = ? AND users.id = ?`,[id, id_user]);
 
     if(data == "") {
-        res.status(400);
-        json('the order you are looking for does not exist in the system')
+        res.status(204);
+        res.json({Message:'the order you are looking for does not exist in the system'});
     } else {
         res.status(200);
-        json(data);
+        res.json(data);
     } 
 });
 
@@ -90,34 +91,38 @@ router.put('/edit/:id', isAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const { state } = req.body;
-        await pool.query('UPDATE orders SET id_state = ? WHERE id = ?', [state, id]);
-        res.status(200);
-        res.json({
-            state:"Order Updated"
-        });
+        const data = await pool.query('SELECT * FROM orders WHERE id = ?',[id]);
+        if(data == "") {
+            res.status(204);
+            res.json({Message:"The order you are looking for does not exist"});
+        } else {
+            await pool.query('UPDATE orders SET id_state = ? WHERE id = ?', [state, id]);
+            res.status(200);
+            res.json({state:"Order Updated"});
+        }
     } catch (error) {
-        res.status(400);
-        res.json({
-            Failed:"The order you are looking for does not exist"
-        });
+        res.status(500);
+        res.json({Error:"Internal Server Error"});
     }
-    
 });
 
 // delete order
 router.delete('/delete/:id', isAdmin, async (req, res) => {
     const { id } = req.params;
     const data = await pool.query(`SELECT * FROM orders WHERE id = ?`, [id]);
-    if(data[0].id_state === 1){
-        await pool.query('DELETE FROM orders WHERE id = ?', [id]);
-        await pool.query('DELETE FROM order_details WHERE id = ?', [id]);
-        res.status(200);
-        res.json({
-            order:"Order Deleted"
-        });
-    }else {
-        res.status(400);
-        json('You cannot delete an order already in process, change the status to canceled');
+    if(data == "") {
+        res.status(204);
+        res.json({Message:"The order you are looking for does not exist"});
+    } else {
+        if(data[0].id_state === 1){
+            await pool.query('DELETE FROM orders WHERE id = ?', [id]);
+            await pool.query('DELETE FROM order_details WHERE id = ?', [id]);
+            res.status(200);
+            res.json({order:"Order Deleted"});
+        }else {
+            res.status(400);
+            res.json({Message:"You cannot delete an order already in process, change the status to canceled"});
+        }
     }
 });
 
