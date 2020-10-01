@@ -20,7 +20,14 @@ Hello! 😉 this is the last project of the certification of **Full-Stack Web De
 - **download or clone the project from the repository**
 - **install a code editor such as visual studio code**
 - **download Node.js**
+- **download Postman to be able to interact with the API**
+- **Open postman search the file delilah.json and open it to find a folder with the ready-made requests**
 - **open project folder in the code editor**
+- **for an easier connection of visual studio code and mysql I recommend you to install an extension called Jun Han's mysql. I leave the link here**
+- **https://marketplace.visualstudio.com/items?itemName=formulahendry.vscode-mysql**
+- **right there you can find out how to configure the connection with mysql**
+- **In the file keys.js you can configure your connection string to the database, if you have any special     configuration you can leave the default**
+- **NOTE: when you open the .sql file in VSCO you will be prompted to install a mysql extension.**
 - **run database script**
 - **Open Terminal**
 
@@ -41,7 +48,7 @@ In the file **delilah.json** you will find the tests to the **endpoints** with t
 
 ## Endpoints.
 
-To interact with the API you need the following endpoints where we will be able to do **CRUD** type operations.
+To interact with the **API** you need the following endpoints where we will be able to do **CRUD** type operations.
 
 ### EndPoints - Users.😃🤩
 

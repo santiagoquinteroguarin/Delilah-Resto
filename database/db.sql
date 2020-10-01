@@ -1,8 +1,5 @@
 CREATE DATABASE Delilah_Resto;
 
--- DATABASES
-SHOW DATABASES;
-
 -- Table Users
 USE Delilah_Resto;
 CREATE TABLE users(
@@ -75,7 +72,6 @@ CREATE TABLE orders(
 );
 
 -- FOREIGN KEYS TABLE ORDERS
-
 USE Delilah_Resto;
 ALTER TABLE orders
     ADD CONSTRAINT fk_pm FOREIGN KEY (id_payment_method) REFERENCES payment_method(id);
@@ -105,24 +101,3 @@ ALTER TABLE order_details
 USE Delilah_Resto;
 ALTER TABLE order_details
     ADD CONSTRAINT fk_pd FOREIGN KEY (id_product) REFERENCES products(id);
-
--- QUERYS
-USE Delilah_Resto;
-SELECT * FROM user;
-
-USE Delilah_Resto;
-SELECT * FROM products;
-
-USE Delilah_Resto;
-INSERT INTO orders (id_user, id_payment_method)
-VALUES(2,1)
-
-
-USE Delilah_Resto;
-SELECT orders.id , status.state, orders.order_date, order_details.amount, products.name, products.description, payment_method.description,products.price, users.username, users.fullname, users.address, users.phone_number, users.email
-FROM orders 
-INNER   JOIN order_details ON orders.id = order_details.id
-        JOIN products ON order_details.id_product = products.id
-        JOIN users ON orders.id_user = users.id
-        JOIN payment_method ON orders.id_payment_method = payment_method.id
-        JOIN status ON orders.id_state = status.id
