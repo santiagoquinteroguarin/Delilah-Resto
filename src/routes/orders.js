@@ -64,7 +64,7 @@ router.get('/', isAdmin, async (req, res) => {
 });
 
 // one order
-router.get('/:id', isLoggedIn, async (req, res) => {
+router.get('/:id', isAdmin, async (req, res) => {
     const { id } = req.params;
     const id_user = req.user.id;
     const data = await pool.query(`

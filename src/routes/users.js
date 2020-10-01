@@ -23,7 +23,7 @@ router.get('/', isAdmin, async (req, res) => {
 });
 
 // one user
-router.get('/:id', isLoggedIn, async (req, res) => {
+router.get('/:id', isAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const user = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
@@ -45,27 +45,33 @@ router.get('/:id', isLoggedIn, async (req, res) => {
 router.put('/edit/:id', isLoggedIn, async (req, res) => {
     try {
         const { id } = req.params;
-        const { username, fullname, email, phone_number, address, password, is_admin } = req.body;
-        const editUser = {
-            username,
-            fullname,
-            email,
-            phone_number,
-            address,
-            password,
-            is_admin,
-        };
-        const data = await pool.query('UPDATE users SET ? WHERE id = ?', [editUser, id]);
-        res.status(200);
-        res.json(data);
+        const id_user = req.user.id;
+        if(id_user == id) {
+            const { username, fullname, email, phone_number, address, password, is_admin } = req.body;
+            const editUser = {
+                username,
+                fullname,
+                email,
+                phone_number,
+                address,
+                password,
+                is_admin,
+            };
+            const data = await pool.query('UPDATE users SET ? WHERE id = ?', [editUser, id]);
+            res.status(200);
+            res.json({Message:"User Edited"});
+        } else {
+            res.status(403);
+            res.json({Message:"You are not authorized to do this type of operation with this id"});
+        }
     } catch (error) {
         res.status(400);
-        res.json({Error:"verify the data and try again"});
+        res.json({Error:"Internal Server Error"});
     }
 });
 
 // delete user
-router.delete('/delete/:id', isLoggedIn ,async (req, res) => {
+router.delete('/delete/:id', isAdmin ,async (req, res) => {
     try {
         const { id } = req.params;
         const data = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
