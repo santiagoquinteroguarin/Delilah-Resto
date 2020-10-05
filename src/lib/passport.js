@@ -17,12 +17,12 @@ passport.use('local.signin', new LocalStrategy({
         // mandar en el orden que se configuro - validation
         const validPassword = await helpers.matchPassword(password, user.password);
         if(validPassword) {
-            done(null, user, console.log('Welcome' + user.username));
+            done(null, user, { Message: 'Login Successful'});
         } else {
-            done(null, false, console.log('Incorrect Password'));
+            done(null, false, { Message: 'Wrong Password'});
         }
     } else {
-        return done(null, false, console.log('The Username does not exists'));
+        return done(null, false, {Message:'User not found'});
     }
 }));
 

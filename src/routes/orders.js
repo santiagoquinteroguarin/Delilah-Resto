@@ -20,8 +20,8 @@ router.post('/add', isLoggedIn, async (req, res) => {
         await pool.query('INSERT INTO orders SET ?', [newOrder]);
 
         // search order
-        const searchIdOrder = await pool.query('SELECT * FROM orders WHERE id_user = ?',[id_user]);
-        const id_order = searchIdOrder[0].id;
+        const searchIdOrder = await pool.query('SELECT MAX(id) FROM orders WHERE id_user = ?',[id_user]);
+        const id_order = Object.values(searchIdOrder[0].valueOf('MAX(id)'));
 
         // add order details
         req.body.products.forEach(async item => {
