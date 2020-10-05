@@ -2,10 +2,12 @@
 const { Router } = require('express');
 const router = Router();
 const pool = require('../database');
-const { isLoggedIn, isNotLoggedIn, isAdmin } = require('../lib/auth');
+const { isLoggedIn, isNotLoggedIn, isAdmin, isUser, verifyAdmin } = require('../lib/auth');
+
+const passport = require('passport');
 
 // products - add product
-router.post('/add', isAdmin, async (req, res) => {
+router.post('/add', verifyAdmin, async (req, res) => {
     try {
         const { name, description, price, picture, is_avaliable } = req.body;
         const newProduct = {
@@ -25,7 +27,7 @@ router.post('/add', isAdmin, async (req, res) => {
 });
 
 // all products
-router.get('/', isLoggedIn, async (req, res) => {
+router.get('/', isUser, async (req, res) => {
     const products = await pool.query('SELECT * FROM products');
     if(products == "") {
         res.status(204);
@@ -37,7 +39,7 @@ router.get('/', isLoggedIn, async (req, res) => {
 });
 
 // one product
-router.get('/:id', isLoggedIn, async (req, res) => {
+router.get('/:id', verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const product = await pool.query('SELECT * FROM products WHERE id = ?', [id]);
@@ -55,7 +57,7 @@ router.get('/:id', isLoggedIn, async (req, res) => {
 });
 
 // delete product
-router.delete('/delete/:id', isAdmin ,async (req, res) => {
+router.delete('/delete/:id', verifyAdmin ,async (req, res) => {
     try {
         const { id } = req.params;
         const data = await pool.query('SELECT * FROM products WHERE id = ?', [id]);
@@ -74,7 +76,7 @@ router.delete('/delete/:id', isAdmin ,async (req, res) => {
 });
 
 // edit product
-router.put('/edit/:id', isAdmin, async (req, res) => {
+router.put('/edit/:id', verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const data = await pool.query('SELECT * FROM products WHERE id = ?', [id]);

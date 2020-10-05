@@ -2,10 +2,10 @@
 const { Router } = require('express');
 const router = Router();
 const pool = require('../database');
-const { isLoggedIn, isNotLoggedIn, isAdmin } = require('../lib/auth');
+const { isLoggedIn, isNotLoggedIn, verifyAdmin, isUser } = require('../lib/auth');
 
 // add order
-router.post('/add', isLoggedIn, async (req, res) => {
+router.post('/add', isUser, async (req, res) => {
     // generate order
     try {
         // get id user
@@ -44,7 +44,7 @@ router.post('/add', isLoggedIn, async (req, res) => {
 });
 
 // all orders
-router.get('/', isAdmin, async (req, res) => {
+router.get('/', verifyAdmin, async (req, res) => {
     const data = await pool.query(`
     SELECT orders.id , status.state, orders.order_date, order_details.amount, products.name AS product, products.description, payment_method.description AS payment_method,products.price, users.username, users.fullname, users.address, users.phone_number, users.email 
     FROM orders 
@@ -64,7 +64,7 @@ router.get('/', isAdmin, async (req, res) => {
 });
 
 // one order
-router.get('/:id', isAdmin, async (req, res) => {
+router.get('/:id', verifyAdmin, async (req, res) => {
     const { id } = req.params;
     const id_user = req.user.id;
     const data = await pool.query(`
@@ -87,7 +87,7 @@ router.get('/:id', isAdmin, async (req, res) => {
 });
 
 // update order
-router.put('/edit/:id', isAdmin, async (req, res) => {
+router.put('/edit/:id', verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const { state } = req.body;
@@ -107,7 +107,7 @@ router.put('/edit/:id', isAdmin, async (req, res) => {
 });
 
 // delete order
-router.delete('/delete/:id', isAdmin, async (req, res) => {
+router.delete('/delete/:id', verifyAdmin, async (req, res) => {
     const { id } = req.params;
     const data = await pool.query(`SELECT * FROM orders WHERE id = ?`, [id]);
     if(data == "") {

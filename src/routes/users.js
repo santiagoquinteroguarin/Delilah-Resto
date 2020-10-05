@@ -3,10 +3,10 @@ const { Router } = require('express');
 const router = Router();
 const passport = require('passport');
 const pool = require('../database');
-const { isLoggedIn, isNotLoggedIn, isAdmin } = require('../lib/auth');
+const { isLoggedIn, isNotLoggedIn, verifyAdmin, isUser } = require('../lib/auth');
 
 // all users
-router.get('/', isAdmin, async (req, res) => {
+router.get('/', verifyAdmin, async (req, res) => {
     try {
         const users = await pool.query('SELECT * FROM users');
         res.status(200);
@@ -23,7 +23,7 @@ router.get('/', isAdmin, async (req, res) => {
 });
 
 // one user
-router.get('/:id', isAdmin, async (req, res) => {
+router.get('/:id', verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const user = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
@@ -42,7 +42,7 @@ router.get('/:id', isAdmin, async (req, res) => {
 });
 
 // edit user
-router.put('/edit/:id', isLoggedIn, async (req, res) => {
+router.put('/edit/:id', isUser, async (req, res) => {
     try {
         const { id } = req.params;
         const id_user = req.user.id;
@@ -71,7 +71,7 @@ router.put('/edit/:id', isLoggedIn, async (req, res) => {
 });
 
 // delete user
-router.delete('/delete/:id', isAdmin ,async (req, res) => {
+router.delete('/delete/:id', verifyAdmin ,async (req, res) => {
     try {
         const { id } = req.params;
         const data = await pool.query('SELECT * FROM users WHERE id = ?', [id]);

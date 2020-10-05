@@ -4,6 +4,11 @@ const LocalStrategy = require('passport-local').Strategy;
 const pool = require('../database');
 const helpers = require('../lib/helpers');
 
+// change
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+
+
 // object configuration - SignIn
 passport.use('local.signin', new LocalStrategy({
     usernameField: 'username',
@@ -59,3 +64,14 @@ passport.deserializeUser(async (id, done) => {
     const rows = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
     done(null, rows[0]);
 });
+
+passport.use(new JwtStrategy({
+    secretOrKey: 'top_secret',
+    jwtFromRequest: ExtractJwt.fromUrlQueryParameter('secret_token')
+}, async (token, done) => {
+    try {
+        return done(null, token.user)
+    } catch (e) {
+        done(error)
+    }
+}))
